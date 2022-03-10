@@ -1,5 +1,8 @@
 import time
 import machine
+from wifi_connection import do_wifi_connect
+
+do_wifi_connect()
 
 led = machine.Pin(2, machine.Pin.OUT)
 
