@@ -42,28 +42,33 @@ ultrasonic = hcsr04.HCSR04(trigger_pin=13, echo_pin=12, echo_timeout_us=1000000)
 
 # import general libraries
 from umqtt.simple import MQTTClient
+import urequests as requests
+import ujson
 
 # ThingSpeak Credentials:
-SERVER = "mqtt.thingspeak.com"
-CHANNEL_ID = "1672220"
-WRITE_API_KEY = "27HADYNIQBN4ZSMW"
-PUB_TIME_SEC = 30
+#SERVER = "mqtt.thingspeak.com"
+#CHANNEL_ID = "1672220"
+#WRITE_API_KEY = "27HADYNIQBN4ZSMW"
+#PUB_TIME_SEC = 30
 
 # MQTT client object
-client = MQTTClient("umqtt_client", SERVER)
+#client = MQTTClient("umqtt_client", SERVER)
 
 # Create the MQTT topic string
-topic = "channels/" + CHANNEL_ID + "/publish/" + WRITE_API_KEY
+#topic = "channels/" + CHANNEL_ID + "/publish/" + WRITE_API_KEY
+
 
 
 
 while True:
     distance = ultrasonic.distance_cm()
-    print('Distance:', distance, 'cm', '|', distance/2.54, 'inch')
-    payload = "field1="+'Distance:' + str(distance) + 'cm' + '|' + str(distance/2.54) + 'inch'
-    client.connect()
-    client.publish(topic, payload)
-    client.disconnect()
+    #print('Distance:', distance, 'cm', '|', distance/2.54, 'inch')
+    #payload = "field1="+'Distance:' + str(distance) + 'cm' + '|' + str(distance/2.54) + 'inch'
+    #client.connect()
+    #client.publish(topic, payload)
+    #client.disconnect()
+    post_data = ujson.dumps({"Distance": distance})
+    response = requests.post(url="https://qlbe9gt5oh.execute-api.us-east-1.amazonaws.com/default/IoW-Lamda", headers = {"content-type": "application/json"}, data = post_data).json()
     if distance <= 10:
         led.value(1)
     else:
