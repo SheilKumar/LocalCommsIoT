@@ -1,6 +1,7 @@
 import time
 import machine
 from wifi_connection import do_wifi_connect
+from Actuators import do_actuation
 
 do_wifi_connect()
 
@@ -67,10 +68,14 @@ while True:
     #client.connect()
     #client.publish(topic, payload)
     #client.disconnect()
-    post_data = ujson.dumps({"Distance": distance})
-    response = requests.post(url="https://qlbe9gt5oh.execute-api.us-east-1.amazonaws.com/default/IoW-Lamda", headers = {"content-type": "application/json"}, data = post_data).json()
     if distance <= 10:
+        post_data = ujson.dumps({"Distance": distance})
+        response = requests.post(url="https://qlbe9gt5oh.execute-api.us-east-1.amazonaws.com/t/IoW-Lamda/sendmessage", headers = {"content-type": "application/json"}, data = post_data).json()
         led.value(1)
     else:
+        response = 0
         led.value(0)
-    time.sleep_ms(1000)
+    print(response)
+    if response:
+        do_actuation()
+    time.sleep_ms(2000)
